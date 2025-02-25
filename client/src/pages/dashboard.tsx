@@ -105,9 +105,9 @@ export default function Dashboard() {
             </Sheet>
           </div>
 
-          <div className="grid gap-4">
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {filteredSubscriptions.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="text-center py-8 text-muted-foreground md:col-span-2 xl:col-span-3">
                 No subscriptions found. Add your first subscription to get started!
               </div>
             ) : (
