@@ -1,14 +1,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import useEmblaCarousel from "embla-carousel-react";
+import { useCallback } from "react";
 import type { Subscription } from "@shared/schema";
 
 const COLORS = [
-  "hsl(262, 83%, 58%)",
-  "hsl(316, 70%, 50%)",
-  "hsl(12, 76%, 61%)",
-  "hsl(45, 100%, 58%)",
-  "hsl(142, 71%, 45%)",
-  "hsl(201, 96%, 32%)",
+  "hsl(0, 0%, 85%)",
+  "hsl(0, 0%, 75%)",
+  "hsl(0, 0%, 65%)",
+  "hsl(0, 0%, 55%)",
+  "hsl(0, 0%, 45%)",
+  "hsl(0, 0%, 35%)",
 ];
 
 interface CategoryData {
@@ -26,7 +30,7 @@ function calculateCategorySpending(subscriptions: Subscription[]): CategoryData[
 
   subscriptions.forEach(sub => {
     if (sub.isPaused) return;
-    
+
     const price = parseFloat(sub.price.toString());
     const monthlyPrice = (() => {
       switch (sub.frequency) {
@@ -74,68 +78,84 @@ export default function SpendingCharts({
 }: {
   subscriptions: Subscription[];
 }) {
+  const [emblaRef, emblaApi] = useEmblaCarousel();
+
+  const scrollPrev = useCallback(() => {
+    if (emblaApi) emblaApi.scrollPrev();
+  }, [emblaApi]);
+
+  const scrollNext = useCallback(() => {
+    if (emblaApi) emblaApi.scrollNext();
+  }, [emblaApi]);
+
   const categoryData = calculateCategorySpending(subscriptions);
   const monthlyData = calculateMonthlyTrend(subscriptions);
 
   return (
-    <div className="grid gap-4 md:grid-cols-2">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Spending by Category</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={categoryData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={100}
-                  fill="#8884d8"
-                  label={({ name, percent }) => 
-                    `${name} ${(percent * 100).toFixed(0)}%`
-                  }
-                >
-                  {categoryData.map((_, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
+    <Card className="col-span-2">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-lg">Spending Analysis</CardTitle>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="icon" onClick={scrollPrev}>
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" size="icon" onClick={scrollNext}>
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="overflow-hidden" ref={emblaRef}>
+          <div className="flex">
+            <div className="flex-[0_0_100%] min-w-0">
+              <div className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={categoryData}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={100}
+                      fill="#8884d8"
+                      label={({ name, percent }) =>
+                        `${name} ${(percent * 100).toFixed(0)}%`
+                      }
+                    >
+                      {categoryData.map((_, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      formatter={(value: number) => [`₹${value.toFixed(2)}`, "Monthly Spend"]}
                     />
-                  ))}
-                </Pie>
-                <Tooltip
-                  formatter={(value: number) => [`₹${value.toFixed(2)}`, "Monthly Spend"]}
-                />
-              </PieChart>
-            </ResponsiveContainer>
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+            <div className="flex-[0_0_100%] min-w-0">
+              <div className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={monthlyData}>
+                    <XAxis dataKey="name" />
+                    <YAxis
+                      tickFormatter={(value) => `₹${value}`}
+                    />
+                    <Tooltip
+                      formatter={(value: number) => [`₹${value.toFixed(2)}`, "Amount"]}
+                    />
+                    <Bar dataKey="amount" fill={COLORS[0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
           </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Monthly Spending Trend</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={monthlyData}>
-                <XAxis dataKey="name" />
-                <YAxis 
-                  tickFormatter={(value) => `₹${value}`}
-                />
-                <Tooltip 
-                  formatter={(value: number) => [`₹${value.toFixed(2)}`, "Amount"]}
-                />
-                <Bar dataKey="amount" fill={COLORS[0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
