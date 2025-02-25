@@ -34,7 +34,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative">
       <header className="border-b sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-10">
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -80,9 +80,9 @@ export default function Dashboard() {
               defaultValue="All" 
               value={selectedCategory || "All"}
               onValueChange={setSelectedCategory}
-              className="w-full sm:w-auto"
+              className="w-full"
             >
-              <TabsList className="w-full sm:w-auto grid grid-cols-3 sm:flex">
+              <TabsList className="w-full grid grid-cols-3 sm:w-auto sm:flex">
                 {categories.map(category => (
                   <TabsTrigger key={category} value={category}>
                     {category}
@@ -91,9 +91,10 @@ export default function Dashboard() {
               </TabsList>
             </Tabs>
 
+            {/* Desktop Add Button */}
             <Dialog>
               <DialogTrigger asChild>
-                <Button className="w-full sm:w-auto">
+                <Button className="hidden sm:flex">
                   <PlusCircle className="h-4 w-4 mr-2" />
                   Add Subscription
                 </Button>
@@ -120,6 +121,21 @@ export default function Dashboard() {
           </div>
         </div>
       </main>
+
+      {/* Mobile Floating Action Button */}
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button
+            size="icon"
+            className="sm:hidden fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg"
+          >
+            <PlusCircle className="h-6 w-6" />
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <SubscriptionForm />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
