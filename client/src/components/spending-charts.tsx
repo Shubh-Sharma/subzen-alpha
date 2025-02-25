@@ -92,7 +92,7 @@ export default function SpendingCharts({
   const monthlyData = calculateMonthlyTrend(subscriptions);
 
   return (
-    <Card className="col-span-2">
+    <Card className="col-span-full">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-lg">Spending Analysis</CardTitle>
         <div className="flex items-center gap-2">
@@ -108,7 +108,7 @@ export default function SpendingCharts({
         <div className="overflow-hidden" ref={emblaRef}>
           <div className="flex">
             <div className="flex-[0_0_100%] min-w-0">
-              <div className="h-[300px]">
+              <div className="h-[250px] sm:h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -117,7 +117,7 @@ export default function SpendingCharts({
                       nameKey="name"
                       cx="50%"
                       cy="50%"
-                      outerRadius={100}
+                      outerRadius="80%"
                       fill="#8884d8"
                       label={({ name, percent }) =>
                         `${name} ${(percent * 100).toFixed(0)}%`
@@ -138,12 +138,18 @@ export default function SpendingCharts({
               </div>
             </div>
             <div className="flex-[0_0_100%] min-w-0">
-              <div className="h-[300px]">
+              <div className="h-[250px] sm:h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={monthlyData}>
-                    <XAxis dataKey="name" />
+                    <XAxis 
+                      dataKey="name"
+                      tick={{ fontSize: 12 }}
+                      interval={window.innerWidth < 640 ? 1 : 0}
+                    />
                     <YAxis
                       tickFormatter={(value) => `₹${value}`}
+                      tick={{ fontSize: 12 }}
+                      width={50}
                     />
                     <Tooltip
                       formatter={(value: number) => [`₹${value.toFixed(2)}`, "Amount"]}

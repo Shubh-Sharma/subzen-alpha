@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { Edit2, Trash2, PauseCircle, PlayCircle } from "lucide-react";
 import { format } from "date-fns";
@@ -83,19 +83,19 @@ export default function SubscriptionCard({
             </p>
 
             <div className="flex items-center gap-2 sm:ml-4 mt-2 sm:mt-0">
-              <Dialog open={isEditing} onOpenChange={setIsEditing}>
-                <DialogTrigger asChild>
+              <Sheet open={isEditing} onOpenChange={setIsEditing}>
+                <SheetTrigger asChild>
                   <Button variant="ghost" size="icon">
                     <Edit2 className="h-4 w-4" />
                   </Button>
-                </DialogTrigger>
-                <DialogContent>
+                </SheetTrigger>
+                <SheetContent side="bottom" className="h-[90vh] sm:h-[80vh]">
                   <SubscriptionForm
                     subscription={subscription}
                     onSuccess={() => setIsEditing(false)}
                   />
-                </DialogContent>
-              </Dialog>
+                </SheetContent>
+              </Sheet>
 
               <Button
                 variant="ghost"
