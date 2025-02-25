@@ -49,7 +49,7 @@ export default function SubscriptionCard({
       queryClient.invalidateQueries({ queryKey: ["/api/subscriptions"] });
       toast({
         title: subscription.isPaused ? "Subscription resumed" : "Subscription paused",
-        description: subscription.isPaused 
+        description: subscription.isPaused
           ? "You will continue to receive notifications for this subscription."
           : "You will not receive notifications for this subscription while it is paused.",
       });
@@ -61,7 +61,7 @@ export default function SubscriptionCard({
   return (
     <Card className={subscription.isPaused ? "opacity-50" : ""}>
       <CardContent className="p-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <div className="flex items-center gap-4">
             <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
               <Logo className="h-6 w-6" />
@@ -74,51 +74,51 @@ export default function SubscriptionCard({
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto sm:ml-auto">
             <Badge variant={subscription.isPaused ? "secondary" : "default"}>
               {subscription.category}
             </Badge>
             <p className="text-sm">
               Next payment: {format(new Date(subscription.nextPayment), "MMM d, yyyy")}
             </p>
-          </div>
 
-          <div className="flex items-center gap-2">
-            <Dialog open={isEditing} onOpenChange={setIsEditing}>
-              <DialogTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Edit2 className="h-4 w-4" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <SubscriptionForm
-                  subscription={subscription}
-                  onSuccess={() => setIsEditing(false)}
-                />
-              </DialogContent>
-            </Dialog>
+            <div className="flex items-center gap-2 sm:ml-4 mt-2 sm:mt-0">
+              <Dialog open={isEditing} onOpenChange={setIsEditing}>
+                <DialogTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Edit2 className="h-4 w-4" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <SubscriptionForm
+                    subscription={subscription}
+                    onSuccess={() => setIsEditing(false)}
+                  />
+                </DialogContent>
+              </Dialog>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => togglePauseMutation.mutate()}
-              disabled={togglePauseMutation.isPending}
-            >
-              {subscription.isPaused ? (
-                <PlayCircle className="h-4 w-4" />
-              ) : (
-                <PauseCircle className="h-4 w-4" />
-              )}
-            </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => togglePauseMutation.mutate()}
+                disabled={togglePauseMutation.isPending}
+              >
+                {subscription.isPaused ? (
+                  <PlayCircle className="h-4 w-4" />
+                ) : (
+                  <PauseCircle className="h-4 w-4" />
+                )}
+              </Button>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => deleteMutation.mutate()}
-              disabled={deleteMutation.isPending}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => deleteMutation.mutate()}
+                disabled={deleteMutation.isPending}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </CardContent>

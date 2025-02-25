@@ -11,6 +11,7 @@ import SpendingCharts from "@/components/spending-charts";
 import SubscriptionCard from "@/components/subscription-card";
 import SubscriptionForm from "@/components/subscription-form";
 import type { Subscription } from "@shared/schema";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function Dashboard() {
   const { user, logoutMutation } = useAuth();
@@ -34,44 +35,54 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-            SubScout
-          </h1>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">
-              Welcome, {user?.username}
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => logoutMutation.mutate()}
-              disabled={logoutMutation.isPending}
-            >
-              {logoutMutation.isPending ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <LogOut className="h-4 w-4" />
-              )}
-            </Button>
+      <header className="border-b sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-10">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+              SubScout
+            </h1>
+            <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+              <span className="text-sm text-muted-foreground hidden sm:inline">
+                Welcome, {user?.username}
+              </span>
+              <div className="flex items-center gap-2">
+                <ThemeToggle />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => logoutMutation.mutate()}
+                  disabled={logoutMutation.isPending}
+                >
+                  {logoutMutation.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <LogOut className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </header>
 
       <main className="container mx-auto px-4 py-8">
         <div className="grid gap-8">
-          <MetricsCards subscriptions={subscriptions} />
-          
-          <SpendingCharts subscriptions={subscriptions} />
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <MetricsCards subscriptions={subscriptions} />
+          </div>
 
-          <div className="flex items-center justify-between">
+          <div className="grid md:grid-cols-2 gap-4">
+            <SpendingCharts subscriptions={subscriptions} />
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <Tabs 
               defaultValue="All" 
               value={selectedCategory || "All"}
               onValueChange={setSelectedCategory}
+              className="w-full sm:w-auto"
             >
-              <TabsList>
+              <TabsList className="w-full sm:w-auto grid grid-cols-3 sm:flex">
                 {categories.map(category => (
                   <TabsTrigger key={category} value={category}>
                     {category}
@@ -82,7 +93,7 @@ export default function Dashboard() {
 
             <Dialog>
               <DialogTrigger asChild>
-                <Button>
+                <Button className="w-full sm:w-auto">
                   <PlusCircle className="h-4 w-4 mr-2" />
                   Add Subscription
                 </Button>
