@@ -68,7 +68,7 @@ export default function Dashboard() {
       <main className="container mx-auto px-4 py-8">
         <div className="grid gap-8">
           <div className="overflow-x-auto -mx-4 px-4 pb-4 sm:overflow-x-visible sm:px-0 sm:pb-0">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 min-w-[600px] sm:min-w-0">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 min-w-[600px] sm:min-w-0">
               <MetricsCards subscriptions={subscriptions} />
             </div>
           </div>
