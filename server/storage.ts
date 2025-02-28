@@ -1,28 +1,26 @@
 import { IStorage } from "./storage";
-import { InsertUser, User, Subscription, InsertSubscription } from "@shared/schema";
+import { User, Subscription, InsertSubscription } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
 
 const MemoryStore = createMemoryStore(session);
 
 export class MemStorage implements IStorage {
-  private users: Map<number, User>;
+  private users: Map<string, User>;
   private subscriptions: Map<number, Subscription>;
-  private currentUserId: number;
   private currentSubId: number;
   sessionStore: session.Store;
 
   constructor() {
     this.users = new Map();
     this.subscriptions = new Map();
-    this.currentUserId = 1;
     this.currentSubId = 1;
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000,
     });
   }
 
-  async getUser(id: number): Promise<User | undefined> {
+  async getUser(id: string): Promise<User | undefined> {
     return this.users.get(id);
   }
 
@@ -32,20 +30,19 @@ export class MemStorage implements IStorage {
     );
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentUserId++;
-    const user: User = { ...insertUser, id };
+  async createUser(id: string, email: string): Promise<User> {
+    const user: User = { id, email };
     this.users.set(id, user);
     return user;
   }
 
-  async getSubscriptionsByUser(userId: number): Promise<Subscription[]> {
+  async getSubscriptionsByUser(userId: string): Promise<Subscription[]> {
     return Array.from(this.subscriptions.values()).filter(
       (sub) => sub.userId === userId,
     );
   }
 
-  async createSubscription(userId: number, data: InsertSubscription): Promise<Subscription> {
+  async createSubscription(userId: string, data: InsertSubscription): Promise<Subscription> {
     const id = this.currentSubId++;
     const sub: Subscription = { ...data, id, userId };
     this.subscriptions.set(id, sub);

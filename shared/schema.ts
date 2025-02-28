@@ -1,16 +1,15 @@
-import { pgTable, text, serial, integer, decimal, date, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, decimal, date, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
-  username: text("username").notNull().unique(),
-  password: text("password").notNull(),
+  id: text("id").primaryKey(), // Changed to text for Firebase UIDs
+  email: text("email").notNull().unique(),
 });
 
 export const subscriptions = pgTable("subscriptions", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull(),
+  userId: text("user_id").notNull(), // Changed to text for Firebase UIDs
   name: text("name").notNull(),
   category: text("category").notNull(),
   price: decimal("price").notNull(),
@@ -21,8 +20,7 @@ export const subscriptions = pgTable("subscriptions", {
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
+  email: true,
 });
 
 export const insertSubscriptionSchema = createInsertSchema(subscriptions)
