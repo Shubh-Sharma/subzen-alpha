@@ -40,21 +40,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const getErrorMessage = (error: FirebaseError) => {
     switch (error.code) {
       case 'auth/configuration-not-found':
-        return 'Firebase authentication is not properly configured. Please check your Firebase Console settings.';
+        return 'Authentication service is currently unavailable. Please try again later.';
       case 'auth/email-already-in-use':
-        return 'An account with this email already exists.';
+        return 'An account already exists with this email address.';
       case 'auth/invalid-email':
-        return 'The email address is not valid.';
+        return 'Please enter a valid email address.';
       case 'auth/operation-not-allowed':
-        return 'Email/password accounts are not enabled. Please enable them in the Firebase Console.';
+        return 'This authentication method is currently unavailable.';
       case 'auth/weak-password':
-        return 'The password is too weak. Please use a stronger password.';
+        return 'Please use a stronger password (minimum 6 characters).';
       case 'auth/wrong-password':
-        return 'Incorrect password. Please try again.';
+        return 'Invalid email or password. Please try again.';
       case 'auth/user-not-found':
-        return 'No account found with this email address.';
+        return 'Invalid email or password. Please try again.';
       default:
-        return error.message;
+        return 'An unexpected error occurred. Please try again later.';
     }
   };
 
