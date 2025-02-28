@@ -14,7 +14,8 @@ import type { Subscription } from "@shared/schema";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function Dashboard() {
-  const { user, logoutMutation } = useAuth();
+  const { user, logout } = useAuth();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const { data: subscriptions = [], isLoading } = useQuery<Subscription[]>({
     queryKey: ["/api/subscriptions"],
@@ -24,6 +25,15 @@ export default function Dashboard() {
   const filteredSubscriptions = selectedCategory && selectedCategory !== "All"
     ? subscriptions.filter(sub => sub.category === selectedCategory)
     : subscriptions;
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await logout();
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -43,17 +53,17 @@ export default function Dashboard() {
             </h1>
             <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
               <span className="text-sm text-muted-foreground hidden sm:inline">
-                Welcome, {user?.username}
+                Welcome, {user?.email}
               </span>
               <div className="flex items-center gap-2">
                 <ThemeToggle />
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => logoutMutation.mutate()}
-                  disabled={logoutMutation.isPending}
+                  onClick={handleLogout}
+                  disabled={isLoggingOut}
                 >
-                  {logoutMutation.isPending ? (
+                  {isLoggingOut ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
                     <LogOut className="h-4 w-4" />

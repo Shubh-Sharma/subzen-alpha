@@ -8,11 +8,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertUserSchema, type InsertUser } from "@shared/schema";
+import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import { useState } from "react";
+
+const authSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+type AuthFormData = z.infer<typeof authSchema>;
 
 export default function AuthPage() {
-  const { user, loginMutation, registerMutation } = useAuth();
+  const { user } = useAuth();
   const [, setLocation] = useLocation();
 
   if (user) {
@@ -72,20 +80,29 @@ export default function AuthPage() {
 }
 
 function AuthForm({ type }: { type: "login" | "register" }) {
-  const { loginMutation, registerMutation } = useAuth();
-  const form = useForm<InsertUser>({
-    resolver: zodResolver(insertUserSchema),
+  const { login, register } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const form = useForm<AuthFormData>({
+    resolver: zodResolver(authSchema),
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
   });
 
-  const onSubmit = (data: InsertUser) => {
-    if (type === "login") {
-      loginMutation.mutate(data);
-    } else {
-      registerMutation.mutate(data);
+  const onSubmit = async (data: AuthFormData) => {
+    setIsLoading(true);
+    try {
+      if (type === "login") {
+        await login(data.email, data.password);
+      } else {
+        await register(data.email, data.password);
+      }
+    } catch (error) {
+      // Error handling is done in the auth hook
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -94,12 +111,12 @@ function AuthForm({ type }: { type: "login" | "register" }) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 mt-4">
         <FormField
           control={form.control}
-          name="username"
+          name="email"
           render={({ field }) => (
             <FormItem>
-              <Label>Username</Label>
+              <Label>Email</Label>
               <FormControl>
-                <Input {...field} />
+                <Input type="email" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -121,9 +138,9 @@ function AuthForm({ type }: { type: "login" | "register" }) {
         <Button 
           type="submit" 
           className="w-full"
-          disabled={loginMutation.isPending || registerMutation.isPending}
+          disabled={isLoading}
         >
-          {(loginMutation.isPending || registerMutation.isPending) && (
+          {isLoading && (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           )}
           {type === "login" ? "Login" : "Register"}
