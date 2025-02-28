@@ -12,11 +12,14 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
-// Debug log to verify config
-console.log('Firebase Config:', {
+// Debug log to verify all config values
+console.log('Firebase Config Values:', {
+  apiKey: firebaseConfig.apiKey ? 'Present' : 'Missing',
   authDomain: firebaseConfig.authDomain,
   projectId: firebaseConfig.projectId,
-  storageBucket: firebaseConfig.storageBucket
+  storageBucket: firebaseConfig.storageBucket,
+  messagingSenderId: firebaseConfig.messagingSenderId ? 'Present' : 'Missing',
+  appId: firebaseConfig.appId ? 'Present' : 'Missing'
 });
 
 // Initialize Firebase

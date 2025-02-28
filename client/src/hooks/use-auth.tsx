@@ -37,6 +37,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => unsubscribe();
   }, []);
 
+  const getErrorMessage = (error: FirebaseError) => {
+    switch (error.code) {
+      case 'auth/configuration-not-found':
+        return 'Firebase authentication is not properly configured. Please check your Firebase Console settings.';
+      case 'auth/email-already-in-use':
+        return 'An account with this email already exists.';
+      case 'auth/invalid-email':
+        return 'The email address is not valid.';
+      case 'auth/operation-not-allowed':
+        return 'Email/password accounts are not enabled. Please enable them in the Firebase Console.';
+      case 'auth/weak-password':
+        return 'The password is too weak. Please use a stronger password.';
+      case 'auth/wrong-password':
+        return 'Incorrect password. Please try again.';
+      case 'auth/user-not-found':
+        return 'No account found with this email address.';
+      default:
+        return error.message;
+    }
+  };
+
   const login = async (email: string, password: string) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
@@ -44,7 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const error = err as FirebaseError;
       toast({
         title: "Login failed",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
       throw error;
@@ -58,7 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const error = err as FirebaseError;
       toast({
         title: "Registration failed",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
       throw error;
@@ -72,7 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const error = err as FirebaseError;
       toast({
         title: "Logout failed",
-        description: error.message,
+        description: getErrorMessage(error),
         variant: "destructive",
       });
       throw error;
